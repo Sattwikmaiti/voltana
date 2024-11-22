@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const pool = require('../db/db');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 // Create: Add new user (Sign Up)
@@ -92,5 +93,43 @@ router.post('/login', async (req, res) => {
     }
   });
   
+  router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        // Check if the user exists
+        const query = 'SELECT id, name, email, password, role FROM Users WHERE email = $1';
+        const result = await pool.query(query, [email]);
+
+        if (result.rowCount === 0) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+
+        const user = result.rows[0];
+
+        // Compare the provided password with the hashed password in the database
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid || user.role !== "admin") {
+            return res.status(401).json({ error: 'Invalid email or password or Not Admin' });
+        }
+
+        // Create a JWT token (you can adjust the payload as needed)
+        const payload = { id: user.id, name: user.name, email: user.email, role: user.role };
+        
+        // You can set a secret key in an environment variable for security
+        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+
+        // If login is successful, return user details and the token
+        res.status(200).json({
+            message: 'Login successful',
+            user: { id: user.id, name: user.name, email: user.email, role: user.role },
+            token: token,  // Send the token in the response
+        });
+
+    } catch (error) {
+        console.error('Error during login:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 module.exports = router;
