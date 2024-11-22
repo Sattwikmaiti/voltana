@@ -117,7 +117,7 @@ router.delete('/users/:id', async (req, res) => {
         const payload = { id: user.id, name: user.name, email: user.email, role: user.role };
         
         // You can set a secret key in an environment variable for security
-        const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign(payload, "Sattwik", { expiresIn: '1h' });
 
         // If login is successful, return user details and the token
         res.status(200).json({
