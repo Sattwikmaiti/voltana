@@ -61,37 +61,37 @@ router.delete('/users/:id', async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+// router.post('/login', async (req, res) => {
+//     const { email, password } = req.body;
   
-    try {
-      // Check if the user exists
-      const query = 'SELECT id, name, email, password, role FROM Users WHERE email = $1';
-      const result = await pool.query(query, [email]);
+//     try {
+//       // Check if the user exists
+//       const query = 'SELECT id, name, email, password, role FROM Users WHERE email = $1';
+//       const result = await pool.query(query, [email]);
   
-      if (result.rowCount === 0) {
-        return res.status(401).json({ error: 'Invalid email or password' });
-      }
+//       if (result.rowCount === 0) {
+//         return res.status(401).json({ error: 'Invalid email or password' });
+//       }
   
-      const user = result.rows[0];
+//       const user = result.rows[0];
   
-      // Compare the provided password with the hashed password in the database
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid || user.role!="admin") {
-        return res.status(401).json({ error: 'Invalid email or password or Not Admin ' });
-      }
+//       // Compare the provided password with the hashed password in the database
+//       const isPasswordValid = await bcrypt.compare(password, user.password);
+//       if (!isPasswordValid || user.role!="admin") {
+//         return res.status(401).json({ error: 'Invalid email or password or Not Admin ' });
+//       }
   
-      // If login is successful, return user details (except the password)
-      const { id, name, role } = user;
-      res.status(200).json({
-        message: 'Login successful',
-        user: { id, name, email, role },
-      });
-    } catch (error) {
-      console.error('Error during login:', error.message);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
+//       // If login is successful, return user details (except the password)
+//       const { id, name, role } = user;
+//       res.status(200).json({
+//         message: 'Login successful',
+//         user: { id, name, email, role },
+//       });
+//     } catch (error) {
+//       console.error('Error during login:', error.message);
+//       res.status(500).json({ error: 'Internal server error' });
+//     }
+//   });
   
   router.post('/login', async (req, res) => {
     const { email, password } = req.body;
