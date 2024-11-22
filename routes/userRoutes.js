@@ -76,8 +76,8 @@ router.post('/login', async (req, res) => {
   
       // Compare the provided password with the hashed password in the database
       const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        return res.status(401).json({ error: 'Invalid email or password' });
+      if (!isPasswordValid || user.role!="admin") {
+        return res.status(401).json({ error: 'Invalid email or password or Not Admin ' });
       }
   
       // If login is successful, return user details (except the password)

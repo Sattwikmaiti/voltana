@@ -1,13 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes.js');
-
+const cors = require('cors');
 const app = express();
 
 // Middleware
 app.use(bodyParser.json());
-
-// Routes
+app.use(cors());
+// Routesa
 app.use('/api', userRoutes);
 
 // Start the server
